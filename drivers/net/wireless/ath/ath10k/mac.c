@@ -32,6 +32,7 @@
 /*********/
 /* Rates */
 /*********/
+extern char ath10k_snoc_fixed_mac_str[18];
 
 static struct ieee80211_rate ath10k_rates[] = {
 	{ .bitrate = 10,
@@ -9997,8 +9998,23 @@ int ath10k_mac_register(struct ath10k *ar)
 	int ret;
 
 	if (!is_valid_ether_addr(ar->mac_addr)) {
-		ath10k_warn(ar, "invalid MAC address; choosing random\n");
-		eth_random_addr(ar->mac_addr);
+		if (ath10k_snoc_fixed_mac_str[0] != '\0') {
+			u8 macbuf[6];
+			int rc = sscanf(ath10k_snoc_fixed_mac_str,
+				"%02x:%02x:%02x:%02x:%02x:%02x",
+				&macbuf[0], &macbuf[1], &macbuf[2],
+				&macbuf[3], &macbuf[4], &macbuf[5]);
+			if (rc == 6) {
+				memcpy(ar->mac_addr, macbuf, 6);
+				ath10k_info(ar, "Use fixed mac from module param: %pM\n", macbuf);
+			} else {
+				ath10k_warn(ar, "invalid sscanf MAC address; choosing random\n");
+				eth_random_addr(ar->mac_addr);
+			}
+		}else{
+			ath10k_warn(ar, "invalid MAC address; choosing random\n");
+			eth_random_addr(ar->mac_addr);
+		}
 	}
 	SET_IEEE80211_PERM_ADDR(ar->hw, ar->mac_addr);
 
