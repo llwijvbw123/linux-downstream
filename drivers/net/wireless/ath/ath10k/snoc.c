@@ -29,6 +29,10 @@
 #define CE_POLL_PIPE 4
 #define ATH10K_SNOC_WAKE_IRQ 2
 
+char ath10k_snoc_fixed_mac_str[18];
+module_param_string(mac, ath10k_snoc_fixed_mac_str, sizeof(ath10k_snoc_fixed_mac_str), 0644);
+MODULE_PARM_DESC(mac, "Set wlan MAC address, format xx:xx:xx:xx:xx:xx");
+
 static char *const ce_name[] = {
 	"WLAN_CE_0",
 	"WLAN_CE_1",
