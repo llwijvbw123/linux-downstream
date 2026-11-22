@@ -32,7 +32,10 @@
 /*********/
 /* Rates */
 /*********/
-extern char ath10k_snoc_fixed_mac_str[18];
+
+static char *fixed_mac_str = NULL;
+module_param(fixed_mac_str, charp, 0644);
+MODULE_PARM_DESC(fixed_mac_str, "Fixed MAC address xx:xx:xx:xx:xx:xx");
 
 static struct ieee80211_rate ath10k_rates[] = {
 	{ .bitrate = 10,
@@ -9998,9 +10001,9 @@ int ath10k_mac_register(struct ath10k *ar)
 	int ret;
 
 	if (!is_valid_ether_addr(ar->mac_addr)) {
-		if (ath10k_snoc_fixed_mac_str[0] != '\0') {
+		if (fixed_mac_str[0] != '\0') {
 			u8 macbuf[6];
-			int rc = sscanf(ath10k_snoc_fixed_mac_str,
+			int rc = sscanf(fixed_mac_str,
 				"%02x:%02x:%02x:%02x:%02x:%02x",
 				&macbuf[0], &macbuf[1], &macbuf[2],
 				&macbuf[3], &macbuf[4], &macbuf[5]);
